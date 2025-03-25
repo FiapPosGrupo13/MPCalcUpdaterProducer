@@ -18,13 +18,13 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore ./MPCalcDeleterProducer.csproj
+      run: dotnet restore ./MPCalcUpdaterProducer.csproj
 
     - name: Build
-      run: dotnet build --no-restore ./MPCalcDeleterProducer.csproj
+      run: dotnet build --no-restore ./MPCalcUpdaterProducer.csproj
 
     - name: Test
-      run: dotnet test --no-build --verbosity normal ./MPCalcDeleterProducerTest.csproj
+      run: dotnet test --no-build --verbosity normal ./MPCalcUpdaterProducer.csproj
     
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
