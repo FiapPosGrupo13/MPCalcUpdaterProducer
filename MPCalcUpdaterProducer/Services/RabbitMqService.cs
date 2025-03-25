@@ -22,8 +22,8 @@ public class RabbitMqService : IRabbitMqService
         _port = int.Parse(configuration["RabbitMQ:Port"] ?? "5672");
         _user = configuration["RabbitMQ:User"] ?? "guest";
         _password = configuration["RabbitMQ:Password"] ?? "guest";
-        _dlqName = configuration["RabbitMQ:DLQName"] ?? $"{_queueName}.error"; // Ex.: mpcalc-register-queue-dlq
-        _dlxName = configuration["RabbitMQ:DLXName"] ?? $"{_queueName}.dlx"; // Exchange para DLQ
+        _dlqName = configuration["RabbitMQ:DLQName"] ?? $"{_queueName}_error"; // Ex.: mpcalc-register-queue-dlq
+        _dlxName = configuration["RabbitMQ:DLXName"] ?? $"{_queueName}_dlx"; // Exchange para DLQ
         _routingKey = configuration["RabbitMQ:RoutingKey"] ?? "contact.update";
     }
 

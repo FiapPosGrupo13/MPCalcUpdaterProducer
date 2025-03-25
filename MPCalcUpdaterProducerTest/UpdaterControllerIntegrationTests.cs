@@ -51,8 +51,8 @@ public class UpdaterControllerIntegrationTests
 
         await channel.QueueDeclareAsync(_queueName, durable: true, exclusive: false, autoDelete: false, arguments: new Dictionary<string, object>
         {
-            { "x-dead-letter-exchange", "mpcalchub.contact.dlx" },
-            { "x-dead-letter-routing-key", "mpcalchub.contact.error" }
+            { "x-dead-letter-exchange", "mpcalchub.contact_dlx" },
+            { "x-dead-letter-routing-key", "mpcalchub.contact_error" }
         });
 
         await channel.QueuePurgeAsync(_queueName);
