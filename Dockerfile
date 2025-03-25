@@ -3,10 +3,10 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
 # Copiar apenas o arquivo do projeto primeiro para otimizar cache
-COPY MPCalcRegisterProducer/*.csproj ./MPCalcRegisterProducer/
+COPY MPCalcUpdaterProducer/*.csproj ./MPCalcUpdaterProducer/
 
 # Entrar no diretório correto antes de rodar restore
-WORKDIR /app/MPCalcRegisterProducer
+WORKDIR /app/MPCalcUpdaterProducer
 
 # Restaurar dependências
 RUN dotnet restore
@@ -16,7 +16,7 @@ WORKDIR /app
 COPY . .
 
 # Publicar o projeto (agora apontando para o arquivo .csproj corretamente)
-WORKDIR /app/MPCalcRegisterProducer
+WORKDIR /app/MPCalcUpdaterProducer
 RUN dotnet publish -c Release -o /out
 
 # Usar a imagem do .NET 8 para runtime
