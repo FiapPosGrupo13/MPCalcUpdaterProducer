@@ -84,8 +84,8 @@ public class RabbitMqService : IRabbitMqService
         // Publica a mensagem
         var body = Encoding.UTF8.GetBytes(message);
         await channel.BasicPublishAsync(
-            exchange: "",
-            routingKey: _queueName,
+            exchange: "topic_exchange",
+            routingKey: _routingKey,
             mandatory: false,
             body: body);
     }
