@@ -11,7 +11,7 @@ public class UpdaterControllerIntegrationTests
 {
     private readonly IRabbitMqService _rabbitMqService;
     private readonly UpdaterController _controller;
-    private readonly string _queueName = "mpcalc-updater-queue";
+    private readonly string _queueName = "contact.update";
 
     public UpdaterControllerIntegrationTests()
     {
@@ -51,8 +51,8 @@ public class UpdaterControllerIntegrationTests
 
         await channel.QueueDeclareAsync(_queueName, durable: true, exclusive: false, autoDelete: false, arguments: new Dictionary<string, object>
         {
-            { "x-dead-letter-exchange", "mpcalc-dlx" },
-            { "x-dead-letter-routing-key", "mpcalc-updater-queue-dlq" }
+            { "x-dead-letter-exchange", "mpcalchub.contact.dlx" },
+            { "x-dead-letter-routing-key", "mpcalchub.contact.error" }
         });
 
         await channel.QueuePurgeAsync(_queueName);

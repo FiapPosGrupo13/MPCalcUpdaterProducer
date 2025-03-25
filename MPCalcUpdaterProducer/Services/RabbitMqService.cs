@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 public class RabbitMqService : IRabbitMqService
 {
+    private readonly string _routingKey;
     private readonly string _queueName;
     private readonly string _hostName;
     private readonly string _user;
@@ -21,8 +22,9 @@ public class RabbitMqService : IRabbitMqService
         _port = int.Parse(configuration["RabbitMQ:Port"] ?? "5672");
         _user = configuration["RabbitMQ:User"] ?? "guest";
         _password = configuration["RabbitMQ:Password"] ?? "guest";
-        _dlqName = configuration["RabbitMQ:DLQName"] ?? $"{_queueName}-dlq"; // Ex.: mpcalc-register-queue-dlq
-        _dlxName = configuration["RabbitMQ:DLXName"] ?? "mpcalc-dlx"; // Exchange para DLQ
+        _dlqName = configuration["RabbitMQ:DLQName"] ?? $"{_queueName}.error"; // Ex.: mpcalc-register-queue-dlq
+        _dlxName = configuration["RabbitMQ:DLXName"] ?? $"{_queueName}.dlx"; // Exchange para DLQ
+        _routingKey = configuration["RabbitMQ:RoutingKey"] ?? "contact.update";
     }
 
     protected virtual async Task<IConnection> CreateConnectionAsync()
@@ -43,14 +45,12 @@ public class RabbitMqService : IRabbitMqService
         await using var connection = await CreateConnectionAsync();
         await using var channel = await connection.CreateChannelAsync();
 
-        // Declara o Dead Letter Exchange (DLX)
         await channel.ExchangeDeclareAsync(
-            exchange: _dlxName,
-            type: "direct",
+            exchange: "topic_exchange",
+            type: "topic",
             durable: true,
             autoDelete: false);
 
-        // Declara a Dead Letter Queue (DLQ)
         await channel.QueueDeclareAsync(
             queue: _dlqName,
             durable: true,
@@ -58,26 +58,28 @@ public class RabbitMqService : IRabbitMqService
             autoDelete: false,
             arguments: null);
 
-        // Vincula a DLQ ao DLX
         await channel.QueueBindAsync(
             queue: _dlqName,
-            exchange: _dlxName,
-            routingKey: _dlqName); // Usa o nome da DLQ como routing key
+            exchange: "topic_exchange",
+            routingKey: "contact.*.error");
 
-        // Argumentos para a fila principal com DLQ configurada
         var arguments = new Dictionary<string, object>
         {
             { "x-dead-letter-exchange", _dlxName },
             { "x-dead-letter-routing-key", _dlqName }
         };
 
-        // Declara a fila principal com os argumentos de DLQ
         await channel.QueueDeclareAsync(
             queue: _queueName,
-            durable: true, // Recomendado para DLQ
+            durable: true,
             exclusive: false,
             autoDelete: false,
             arguments: arguments);
+
+         await channel.QueueBindAsync(
+            queue: _queueName,
+            exchange: "topic_exchange",
+            routingKey: "contact.*");
 
         // Publica a mensagem
         var body = Encoding.UTF8.GetBytes(message);
