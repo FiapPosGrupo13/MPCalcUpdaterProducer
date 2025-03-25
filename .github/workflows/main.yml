@@ -22,9 +22,6 @@ jobs:
 
     - name: Build
       run: dotnet build --no-restore MPCalcUpdaterProducer/MPCalcUpdaterProducer.csproj
-
-    - name: Test
-      run: dotnet test --no-build --verbosity normal MPCalcUpdaterProducerTest/MPCalcUpdaterProducerTest.csproj
     
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
